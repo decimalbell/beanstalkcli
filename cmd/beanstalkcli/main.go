@@ -23,6 +23,10 @@ func main() {
 		body                 string
 	)
 
+	var (
+		id int64
+	)
+
 	app := &cli.App{
 		Flags: []cli.Flag{
 			&cli.StringFlag{
@@ -81,6 +85,32 @@ func main() {
 					}
 
 					fmt.Println(id)
+					return nil
+				},
+			},
+			{
+				Name:  "peek",
+				Usage: "peek",
+				Flags: []cli.Flag{
+					&cli.Int64Flag{
+						Name:        "id",
+						Usage:       "id",
+						Destination: &id,
+						Required:    true,
+					},
+				},
+				Action: func(cCtx *cli.Context) error {
+					conn, err := beanstalk.Dial("tcp", net.JoinHostPort(host, strconv.Itoa(port)))
+					if err != nil {
+						return err
+					}
+
+					body, err := conn.Peek(uint64(id))
+					if err != nil {
+						return nil
+					}
+
+					fmt.Println(string(body))
 					return nil
 				},
 			},
